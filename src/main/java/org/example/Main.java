@@ -2,10 +2,11 @@
 package org.example;
 
 import javafx.application.Application;
-import javafx.geometry.Pos;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -13,21 +14,41 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        Label message = new Label("Bạn chưa bấm nút");
+        TextField priceInput = new TextField();
+        priceInput.setPromptText("Nhập giá sản phẩm");
 
-        Button button = new Button("Bấm tôi");
+        Button checkButton = new Button("Kiểm tra giá");
+        Label resultLabel = new Label();
 
-        button.setOnAction(event -> {
-            message.setText("Bạn đã bấm nút thành công!");
+        // Tạo đối tượng Backend
+        ProductService productService = new ProductService();
+
+        // Khi người dùng bấm nút
+        checkButton.setOnAction(event -> {
+            try {
+                double price = Double.parseDouble(
+                        priceInput.getText()
+                );
+
+                // Gọi Backend xử lý
+                String result =
+                        productService.validatePrice(price);
+
+                // Hiển thị kết quả
+                resultLabel.setText(result);
+
+            } catch (NumberFormatException e) {
+                resultLabel.setText("Vui lòng nhập một số!");
+            }
         });
 
-        VBox layout = new VBox(15, message, button);
-        layout.setAlignment(Pos.CENTER);
+        VBox root = new VBox(
+                10, priceInput, checkButton, resultLabel
+        );
+        root.setPadding(new Insets(20));
 
-        Scene scene = new Scene(layout, 400, 250);
-
-        stage.setTitle("Button Demo");
-        stage.setScene(scene);
+        stage.setScene(new Scene(root, 350, 200));
+        stage.setTitle("Kiểm tra giá sản phẩm");
         stage.show();
     }
 
